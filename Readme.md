@@ -1,4 +1,4 @@
-# 🌫️ Air Pollution Across Pakistan, from Space
+#  Air Pollution Across Pakistan, from Space
 
 **A seven-year, three-variable study of air quality over 15 Pakistani cities (2019–2026), built entirely from satellite and reanalysis data — plus a machine-learning model and an interactive dashboard.**
 
@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 What this project does
+##  What this project does
 
 | | |
 |---|---|
@@ -19,7 +19,7 @@ This is deliberately a **multi-variable** project: a single pollutant is a chart
 
 ---
 
-## 🔑 Key findings
+##  Key findings
 
 1. **A clear pollution hierarchy.** Lahore and the Punjab industrial belt carry the highest loads on *both* pollutants; Quetta and interior Sindh the lowest — a spread of roughly 5–7× across the country.
 2. **NO₂ and PM2.5 mostly agree, and where they *disagree* is the insight.** The two rankings correlate strongly (Spearman ρ ≈ 0.7), but cities like Karachi rank far higher on NO₂ than PM2.5 — pointing to *local combustion* vs *transported/secondary particulate*.
@@ -27,11 +27,11 @@ This is deliberately a **multi-variable** project: a single pollutant is a chart
 4. **The 2020 COVID lockdown is visible in both pollutants** as a spring dip — two independent data sources agreeing strengthens the signal beyond what either shows alone.
 5. **Weather drives dispersion — quantified.** A machine-learning model predicts PM2.5 from NO₂ + weather on *held-out cities*, and its coefficients put numbers on the dispersion effect: wind and rain measurably lower particulate even when emissions are held fixed. Winter peaks are therefore partly *trapped air*, not just higher emissions.
 
-> ⚠️ **Honest framing:** NO₂ is a *measured* combustion proxy (not AQI); PM2.5 here is *modelled* output (CAMS, ~40 km), not a ground measurement; weather is reanalysis. Every claim is kept to what each data source can support.
+>  **Honest framing:** NO₂ is a *measured* combustion proxy (not AQI); PM2.5 here is *modelled* output (CAMS, ~40 km), not a ground measurement; weather is reanalysis. Every claim is kept to what each data source can support.
 
 ---
 
-## 📊 Visualizations
+##  Visualizations
 
 #### Data coverage by city & variable
 NO₂ (satellite) has real cloud/fog gaps; PM2.5 (model) and weather (reanalysis) are near-complete. NO₂'s gaps cluster on the foggiest winter days — the most polluted ones — so its winter peaks are, if anything, conservative.
@@ -71,7 +71,7 @@ Random-forest PM2.5 predictions on held-out cities, and what the model leans on.
 
 ---
 
-## 🤖 The model
+##  The model
 
 A model predicting **PM2.5 from NO₂ + temperature + wind + precipitation + day-of-year**, validated with **GroupKFold grouped by city** — every fold tests on cities the model never trained on. This is intentionally strict: it stops the model from memorising a city's baseline and forces it to learn the *relationships*, so the reported skill generalises.
 
@@ -84,7 +84,7 @@ A model predicting **PM2.5 from NO₂ + temperature + wind + precipitation + day
 
 ---
 
-## 🖥️ Interactive dashboard
+##  Interactive dashboard
 
 A **Streamlit** app (`app.py`) over the processed layers:
 
@@ -100,7 +100,7 @@ streamlit run app.py
 
 ---
 
-## 📁 Repository structure
+##  Repository structure
 
 ```
 .
@@ -116,7 +116,7 @@ streamlit run app.py
 
 ---
 
-## 🔄 Reproduce it
+##  Reproduce it
 
 1. **Collect the raw data** (or use the provided `data/raw/`). The Earth Engine scripts pull NO₂ (Sentinel-5P `COPERNICUS/S5P/OFFL/L3_NO2`), PM2.5 (`ECMWF/CAMS/NRT`), and weather (`ECMWF/ERA5_LAND/DAILY_AGGR`) for the 15 cities, one file per year, into `data/raw/`.
 2. **Run the notebook** top to bottom:
@@ -133,7 +133,7 @@ jupyter notebook pakistan_pollution_analysis.ipynb
 
 ---
 
-## 🛰️ Data sources
+##  Data sources
 
 | Variable | Dataset | Provider |
 |---|---|---|
@@ -145,7 +145,7 @@ All accessed via [Google Earth Engine](https://earthengine.google.com/).
 
 ---
 
-## ⚠️ Limitations
+##  Limitations
 
 - **PM2.5 is modelled** (CAMS, ~40 km), not measured at the surface; city values reflect the regional airshed.
 - **Sparse ground truth** in Pakistan — values are checked against physical plausibility and cross-variable consistency rather than a dense reference network.
@@ -155,7 +155,7 @@ All accessed via [Google Earth Engine](https://earthengine.google.com/).
 
 ---
 
-## 👤 Author
+##  Author
 
 **[Ailya Shah]** — _[azainab.bsds24seecs@seecs.edu.pk]_
 
