@@ -6,6 +6,10 @@
 
 ---
 
+## Architecture
+
+![Pipeline architecture](architecture.png)
+
 ##  What this project does
 
 | | |
@@ -100,6 +104,18 @@ streamlit run app.py
 
 ---
 
+## Tests
+
+A small `pytest` suite (`test_pipeline.py`) covers the most error-prone
+parts of the pipeline: the unit conversions used during extraction
+(kg/m³→µg/m³, K→°C, m→mm, wind components→speed) and the cleaning/merge
+logic (NaN handling, no zero-filling, and the outer join on city + date).
+
+```bash
+pip install pytest
+pytest -q
+```
+
 ##  Repository structure
 
 ```
@@ -112,6 +128,7 @@ streamlit run app.py
 ├── app.py               # Streamlit dashboard + forecast
 ├── requirements.txt
 └── README.md
+├── test_pipeline.py     # unit tests for conversions + merge logic
 ```
 
 ---
