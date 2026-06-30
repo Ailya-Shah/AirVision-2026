@@ -25,11 +25,15 @@ This is deliberately a **multi-variable** project: a single pollutant is a chart
 
 ##  Key findings
 
-1. **A clear pollution hierarchy.** Lahore and the Punjab industrial belt carry the highest loads on *both* pollutants; Quetta and interior Sindh the lowest — a spread of roughly 5–7× across the country.
-2. **NO₂ and PM2.5 mostly agree, and where they *disagree* is the insight.** The two rankings correlate strongly (Spearman ρ ≈ 0.7), but cities like Karachi rank far higher on NO₂ than PM2.5 — pointing to *local combustion* vs *transported/secondary particulate*.
+1. **The two pollutants trace different geographies.** PM2.5's worst cities are a clean Punjab-industrial cluster — Lahore, Faisalabad, Gujranwala, Sialkot, Multan, Sargodha take the top six spots (a ~4× spread from Lahore to Quetta). NO₂'s worst cities are different: Lahore still tops the list, but it's followed by Islamabad, Rawalpindi, and Karachi — traffic/combustion hubs rather than industrial Punjab (a ~5× spread). **Quetta is lowest on both.** That the two "worst city" lists aren't the same cities is itself a finding, not a footnote.
+
+2. **NO₂ and PM2.5 only weakly agree across cities (Spearman ρ = 0.38, p = 0.16 — not significant at n=15), and the divergence is the real insight.** Karachi, Islamabad, and Rawalpindi rank 6–8 places higher on NO₂ than PM2.5 — substantial local combustion that doesn't translate into proportional particulate buildup, plausibly due to better dispersion (Karachi's coastal winds) or less dust/secondary-aerosol input. Larkana shows the reverse — low NO₂, comparatively higher PM2.5 — closer to a *transported/secondary particulate* signature. With only 15 cities, none of this should be read as a strong statistical pattern, but the city-level texture is something a single-pollutant project can't surface.
+
 3. **Two pollutants, one seasonal engine.** Both peak in winter (temperature inversions + crop-residue burning trap emissions) and bottom out in the monsoon (rain scrubs the air).
+
 4. **The 2020 COVID lockdown is visible in both pollutants** as a spring dip — two independent data sources agreeing strengthens the signal beyond what either shows alone.
-5. **Weather drives dispersion — quantified.** A machine-learning model predicts PM2.5 from NO₂ + weather on *held-out cities*, and its coefficients put numbers on the dispersion effect: wind and rain measurably lower particulate even when emissions are held fixed. Winter peaks are therefore partly *trapped air*, not just higher emissions.
+
+5. **Weather drives dispersion — quantified, but modestly.** A model predicting PM2.5 from NO₂ + weather + season on *held-out cities* reaches R² = 0.31 (MAE ≈ ±19 µg/m³, random forest; linear regression alone is weaker at R² = 0.22). Its coefficients show wind measurably lowers PM2.5 (−5.4 µg/m³ per +1 SD) with a smaller precipitation effect (−0.2 µg/m³ per +1 SD), even with emissions held fixed — but the **seasonal term (`cos_doy`) is the model's single strongest feature**, ahead of NO₂, temperature, and wind. Winter peaks are therefore best read as seasonality (trapped air *and* timing) rather than combustion alone.
 
 >  **Honest framing:** NO₂ is a *measured* combustion proxy (not AQI); PM2.5 here is *modelled* output (CAMS, ~40 km), not a ground measurement; weather is reanalysis. Every claim is kept to what each data source can support.
 
