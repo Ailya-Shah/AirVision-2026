@@ -1,6 +1,6 @@
 #  Air Pollution Across Pakistan, from Space
 
-**A seven-year, three-variable study of air quality over 15 Pakistani cities (2019–2026), built entirely from satellite and reanalysis data — plus a machine-learning model and an interactive dashboard.**
+**A three-variable study of air quality over 15 Pakistani cities across seven complete years (2019–2025, plus a partial 2026), built entirely from satellite and reanalysis data — plus a machine-learning model and an interactive dashboard.**
 
 > Pakistan ranks among the most polluted countries on Earth, and Lahore repeatedly tops the global list for the worst urban air during its winter smog season — yet the country has almost no public ground-monitoring network. This project fills that gap using openly available Earth-observation data, and goes beyond a single pollutant to study **how pollution behaves, where it comes from, and what disperses it.**
 
@@ -14,7 +14,7 @@
 
 | | |
 |---|---|
-| **Scope** | 15 cities · 2019–present · daily resolution · ~40,000 observations per variable |
+| **Scope** | 15 cities · 2019–2025 complete (+ partial 2026) · daily resolution · ~40,000 city-days per variable |
 | **Variables** | **NO₂** (Sentinel-5P, combustion proxy) · **PM2.5** (CAMS model, µg/m³) · **Weather** (ERA5-Land: temperature, wind, precipitation) |
 | **Pipeline** | Earth Engine extraction → validated cleaning → merged master → analysis → ML model → dashboard |
 | **Deliverables** | Reproducible notebook · processed datasets · trained model · Streamlit app |
@@ -25,7 +25,7 @@ This is deliberately a **multi-variable** project: a single pollutant is a chart
 
 ##  Key findings
 
-1. **The two pollutants trace different geographies.** PM2.5's worst cities are a clean Punjab-industrial cluster — Lahore, Faisalabad, Gujranwala, Sialkot, Multan, Sargodha take the top six spots (a ~4× spread from Lahore to Quetta). NO₂'s worst cities are different: Lahore still tops the list, but it's followed by Islamabad, Rawalpindi, and Karachi — traffic/combustion hubs rather than industrial Punjab (a ~5× spread). **Quetta is lowest on both.** That the two "worst city" lists aren't the same cities is itself a finding, not a footnote.
+1. **The two pollutants trace different geographies.** PM2.5's worst cities are a clean Punjab-industrial cluster — Lahore, Faisalabad, Gujranwala, Sialkot, Multan, Sargodha take the top six spots (a ~4× spread from Lahore to Quetta). NO₂'s worst cities are different: Lahore still tops the list, but it's followed by Islamabad, Rawalpindi, and Karachi — traffic/combustion hubs rather than industrial Punjab (a ~5× spread). **Quetta is lowest on both.** The two lists agree at the very top (Lahore leads both) but diverge below — and that divergence is itself a finding, not a footnote.
 
 2. **NO₂ and PM2.5 only weakly agree across cities (Spearman ρ = 0.38, p = 0.16 — not significant at n=15), and the divergence is the real insight.** Karachi, Islamabad, and Rawalpindi rank 6–8 places higher on NO₂ than PM2.5 — substantial local combustion that doesn't translate into proportional particulate buildup, plausibly due to better dispersion (Karachi's coastal winds) or less dust/secondary-aerosol input. Larkana shows the reverse — low NO₂, comparatively higher PM2.5 — closer to a *transported/secondary particulate* signature. With only 15 cities, none of this should be read as a strong statistical pattern, but the city-level texture is something a single-pollutant project can't surface.
 
@@ -33,7 +33,7 @@ This is deliberately a **multi-variable** project: a single pollutant is a chart
 
 4. **The 2020 COVID lockdown is visible in both pollutants** as a spring dip — two independent data sources agreeing strengthens the signal beyond what either shows alone.
 
-5. **Weather drives dispersion — quantified, but modestly.** A model predicting PM2.5 from NO₂ + weather + season on *held-out cities* reaches R² = 0.31 (MAE ≈ ±19 µg/m³, random forest; linear regression alone is weaker at R² = 0.22). Its coefficients show wind measurably lowers PM2.5 (−5.4 µg/m³ per +1 SD) with a smaller precipitation effect (−0.2 µg/m³ per +1 SD), even with emissions held fixed — but the **seasonal term (`cos_doy`) is the model's single strongest feature**, ahead of NO₂, temperature, and wind. Winter peaks are therefore best read as seasonality (trapped air *and* timing) rather than combustion alone.
+5. **Weather drives dispersion — quantified, but modestly.** A model predicting PM2.5 from NO₂ + weather + season on *held-out cities* reaches R² = 0.31 (MAE ≈ ±19 µg/m³, random forest; linear regression alone is weaker at R² = 0.22). Its linear coefficients show wind measurably lowers PM2.5 (−5.4 µg/m³ per +1 SD) with a smaller precipitation effect (−0.2 µg/m³ per +1 SD), even with emissions held fixed — but in the random forest the **seasonal term (`cos_doy`) is the model's single strongest feature**, ahead of NO₂, temperature, and wind. Winter peaks are therefore best read as seasonality (trapped air *and* timing) rather than combustion alone.
 
 >  **Honest framing:** NO₂ is a *measured* combustion proxy (not AQI); PM2.5 here is *modelled* output (CAMS, ~40 km), not a ground measurement; weather is reanalysis. Every claim is kept to what each data source can support.
 
@@ -47,7 +47,7 @@ NO₂ (satellite) has real cloud/fog gaps; PM2.5 (model) and weather (reanalysis
 ![Data coverage](visualizations/01_coverage.png)
 
 #### City rankings — NO₂ vs PM2.5
-The two pollutants broadly agree on the worst cities, but the differences reveal local-combustion vs transported-particulate regimes.
+The two pollutants agree at the very top — Lahore leads both — but diverge below, revealing local-combustion vs transported-particulate regimes.
 
 ![City rankings](visualizations/02_city_rankings.png)
 
@@ -85,7 +85,7 @@ A model predicting **PM2.5 from NO₂ + temperature + wind + precipitation + day
 
 - **Validation:** grouped (leave-cities-out) 5-fold cross-validation
 - **Headline metric:** cross-validated R² and MAE on entirely held-out cities
-- **Dominant predictor:** NO₂ (combustion), confirming the physical story
+- **Dominant predictor:** the seasonal term (`cos_doy`, importance ≈0.42) is the single strongest feature; NO₂ (≈0.17) is a meaningful contributor but not dominant, because NO₂ is itself seasonal and part of its signal routes through the day-of-year term
 - **Dispersion effect:** negative wind & precipitation coefficients quantify how much weather lowers PM2.5 with emissions held fixed
 
 > *Associational, not causal* — the model quantifies relationships in observational data, not a controlled experiment.
@@ -99,7 +99,7 @@ A **Streamlit** app (`app.py`) over the processed layers:
 - **City trends** — daily/weekly/monthly time series with the WHO 24-hour guideline marked
 - **Compare cities** — pollutant ranking that re-sorts as you switch NO₂ ↔ PM2.5
 - **Seasonal cycle** — NO₂ vs PM2.5 climatology per city
-- **PM2.5 forecast** — move NO₂/temperature/wind/rain sliders to see the model's live prediction with an AQI category, plus a wind-sweep chart that visualises the dispersion effect
+- **PM2.5 forecast** — move the NO₂/temperature/wind/rain/month sliders to see the model's live prediction with an AQI category, plus a wind-sweep chart that visualises the dispersion effect
 
 ```bash
 pip install -r requirements.txt
@@ -130,9 +130,9 @@ pytest -q
 ├── visualizations/      # all figures, generated by the notebook (Part D)
 ├── pakistan_pollution_analysis.ipynb   # full pipeline: A) engineering  B) analysis  C) model  D) figures
 ├── app.py               # Streamlit dashboard + forecast
+├── test_pipeline.py     # unit tests for conversions + merge logic
 ├── requirements.txt
 └── README.md
-├── test_pipeline.py     # unit tests for conversions + merge logic
 ```
 
 ---
@@ -171,13 +171,13 @@ All accessed via [Google Earth Engine](https://earthengine.google.com/).
 - **PM2.5 is modelled** (CAMS, ~40 km), not measured at the surface; city values reflect the regional airshed.
 - **Sparse ground truth** in Pakistan — values are checked against physical plausibility and cross-variable consistency rather than a dense reference network.
 - **NO₂ missing-not-at-random** — cloud/fog preferentially removes the foggiest (most polluted) winter days. One PM2.5 day (2023-05-12) is absent due to a corrupt source image and retained as `NaN`.
-- **Short trend window** (7 years) and a **partial 2026** (excluded from annual statistics).
+- **Short trend window** (seven complete years) and a **partial 2026** (excluded from annual statistics).
 - **The model is associational**, not a causal attribution of weather effects.
 
 ---
 
 ##  Author
 
-**[Ailya Shah]** — _[azainab.bsds24seecs@seecs.edu.pk]_
+**Ailya Shah** — _azainab.bsds24seecs@seecs.edu.pk_
 
 *Built with Python, Google Earth Engine, scikit-learn, and Streamlit.*

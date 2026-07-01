@@ -2,7 +2,7 @@
 Pakistan Air Pollution Dashboard
 =================================
 Interactive Streamlit app over the processed master layers (NO2 + PM2.5 + weather)
-for 15 cities, 2019-present, plus a PM2.5 prediction model.
+for 15 cities, 2019–2025 (+ partial 2026), plus a PM2.5 prediction model.
 
 Run locally:   streamlit run app.py
 Deploy free:   push to GitHub -> share.streamlit.io -> point at app.py
@@ -39,6 +39,11 @@ PM_BANDS = [(0, 12, "Good", "#2ecc71"), (12, 35, "Moderate", "#f1c40f"),
 @st.cache_data
 def load_daily():
     df = pd.read_csv(DATA / "master_daily.csv", parse_dates=["date"])
+    # Derive everything the app needs straight from `date`, so the app stays
+    # self-sufficient even if the CSV schema changes (no reliance on year/month
+    # columns happening to be present in the file).
+    df["year"] = df["date"].dt.year
+    df["month"] = df["date"].dt.month
     df["doy"] = df["date"].dt.dayofyear
     df["sin_doy"] = np.sin(2 * np.pi * df["doy"] / 365.25)
     df["cos_doy"] = np.cos(2 * np.pi * df["doy"] / 365.25)
@@ -52,9 +57,13 @@ def load_monthly():
 
 @st.cache_resource
 def train_model(df: pd.DataFrame):
-    """Train the PM2.5 model once and cache it across reruns."""
+    """Train the PM2.5 model once and cache it across reruns.
+
+    Mirrors the notebook's Part C estimator (n_estimators=300) so the
+    dashboard's model matches the one whose skill is reported there.
+    """
     m = df.dropna(subset=FEATURES + ["pm25"])
-    rf = RandomForestRegressor(n_estimators=200, min_samples_leaf=20,
+    rf = RandomForestRegressor(n_estimators=300, min_samples_leaf=20,
                                n_jobs=-1, random_state=0)
     rf.fit(m[FEATURES].values, m["pm25"].values)
     return rf
@@ -81,7 +90,7 @@ except FileNotFoundError:
 CITIES = sorted(daily["city"].unique())
 model = train_model(daily)
 
-st.title("🌫️ Pakistan Air Pollution — 15 Cities, 2019–present")
+st.title("🌫️ Pakistan Air Pollution — 15 Cities, 2019–2025 (+ partial 2026)")
 st.caption("NO₂ (Sentinel-5P, combustion proxy) · PM2.5 (CAMS model, µg/m³) · "
            "Weather (ERA5-Land). NO₂ is a combustion proxy, not AQI; PM2.5 is modelled output.")
 
@@ -206,7 +215,7 @@ with tab4:
     st.markdown(f"### Predicted PM2.5: "
                 f"<span style='color:{color}'>{pred:.0f} µg/m³ — {name}</span>",
                 unsafe_allow_html=True)
-    st.progress(min(pred / 250, 1.0))
+    st.progress(min(max(pred / 250, 0.0), 1.0))
 
     # show the dispersion effect explicitly: sweep wind, hold the rest
     sweep = []
